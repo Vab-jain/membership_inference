@@ -1,0 +1,30 @@
+# get args from cmd
+# args <= shadow_dataset_name, shadow_model, attack_model, [eval/test]_dataset
+
+config:
+    - shadow_model
+    - attack_model
+    - target_model
+    - shadow_dataset
+    - shadow_dataset_num_classes
+    - split_ratio
+    - train_attack_epochs,
+    - train_shadow_epochs,
+
+########
+---> incorporated this step into "train_shadow_models" function <---
+# split shadow dataset into : train/test
+# def get_dataloaders(dataset_name, dataset_path) -> shadow_[train/test]_dataloaders
+########
+
+# train shadow models
+# def train_shadow_models(shadow_model: str, shadow_dataset: str, target_model: str, split_raito: float) -> /saved_shadow_models/{model}_{datset}.pth
+
+# create attack dataset
+# def create_attack_dataset(saved_shadow_model_path, train_dataset_path, test_dataset_path) -> attack_dataset_{shadow_model}.p
+
+# train attack model
+# def train_attack_models(model, attack_dataset_path) -> /saved_attack_models/{model}_{dataset}.pth
+
+# run membership attack
+# def membership_inference(inference_dataset_path, attack_model_path, [optional] (str) out_suffix) -> task{i}_{dataset}.npy ,
