@@ -5,7 +5,7 @@ from pathlib import Path
 import pickle
 from torchvision import models
 import typing
-from config import device
+from config import device, config
 
 
 def train_shadow_models(config):
@@ -18,27 +18,31 @@ def train_shadow_models(config):
 
     train_size = int(config['split_ratio'] * len(shadow_dataset))
 
-    train_dataset = shadow_dataset[:train_size]
+    train_dataset, val_dataset = shadow_dataset[:train_size-1000], shadow_dataset[train_size-1000:train_size]
 
-    dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=False)
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=False)
+    val_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=64, shuffle=False)
 
     shadow_model = models.resnet34(num_classes=10).to(device)
 
     loss_fn = nn.CrossEntropyLoss()
-    optim = torch.optim.Adam(shadow_model.parameters(),lr=0.001,eps=1e-7)
+    optim = torch.optim.Adam(shadow_model.parameters(),lr=0.001,eps=1e-7)           # in paper lr=0.0001,
 
     print('Training Started')
 
     for epoch in range(config['train_shadow_epochs']):
         print(f'Training Epoch: {epoch} / ' + str(config['train_shadow_epochs']))
-        for batch_idx, (img, label) in enumerate(dataloader):
+        for batch_idx, (img, label) in enumerate(train_dataloader):
             optim.zero_grad()
 
             img = img.to(device)
             out = shadow_model(img)
 
-            loss =  loss_fn(torch.argmax(out, dim=1).float(),label.float())
-            loss.requires_grad=True
+            # Apply softmax to get probabilities
+            predictions = torch.softmax(out, dim=1)
+
+            loss =  loss_fn(predictions.float(),label.long())
+            # loss.requires_grad=True
             loss.backward()
 
             optim.step()
@@ -47,6 +51,21 @@ def train_shadow_models(config):
 
     print('Training Finished')
 
+    print('Val begin')
+    total = 0
+    correct = 0
+    shadow_model.eval()
+    with torch.no_grad():
+        for _, (pos, label) in enumerate(val_dataloader):
+            pos = pos.to(device)
+            out = shadow_model(pos)
+
+            _, pred = torch.max(out, 1)
+            total += label.size(0)
+            correct += (pred == label).sum().item()
+
+    print('Test Accuracy of the model: {} %'.format(100 * correct / total))
+
 
 
     # SAVE MODEL
@@ -54,3 +73,7 @@ def train_shadow_models(config):
 
     torch.save(shadow_model.state_dict(), SAVE_PATH)
 
+
+
+if __name__ == "__main__":
+    train_shadow_models(config)
