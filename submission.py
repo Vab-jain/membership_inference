@@ -5,7 +5,7 @@ import pickle
 import torchvision.models as models
 import numpy as np
 
-def membership_inference(config):
+def submission_pipeline(config):
     print('{} MODE!!!'.format(config['mode']))
     
     LOAD_MODEL_PATH = Path(str(Path.cwd()) + '/saved_attack_models/' + config['shadow_model'] + '_' + config['shadow_dataset'] + '.pth')
@@ -41,28 +41,25 @@ def membership_inference(config):
 
     target_model.eval()
     attack_model.eval()
-    total = 0
-    correct = 0
+    
+    submission = []
     
     with torch.no_grad():
-        for batch_idx, (img, label, membership) in enumerate(dataloader):
+        for batch_idx, (img, label) in enumerate(dataloader):
             img = img.to(device)
             label = label.to(device)
-            membership = membership.to(device)
             
             pred = target_model(img)
             top_pred = torch.topk(pred, 3)[0]
 
             out = attack_model(top_pred)
-
-            total += label.size(0)
-            correct += (out.argmax(dim=1) == membership).sum().item()
             
+            if config['mode']=='test':
+                submission.extend(out.argmax(dim=1).tolist())
     
-    print('---> Results of the membership inference attack <---')
-    print('Final accuracy on eval is : ' + str(100 * correct / total))
-    
+    np.save(f'{config["task"]}_{config["target_model"]}_{config["shadow_dataset"]}.npy', submission)
+
 
 if __name__ == '__main__':
     from config import get_config, device
-    membership_inference(get_config('task0'))
+    submission_pipeline(get_config('task0'))

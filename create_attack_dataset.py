@@ -3,7 +3,7 @@ from torchvision import models
 from pathlib import Path
 import pickle
 import numpy as np
-from config import config, device
+from config import device
 
 
 def create_attack_dataset(config):
@@ -11,9 +11,17 @@ def create_attack_dataset(config):
     # load shadow model
     LOAD_PATH = Path(str(Path.cwd())+'/saved_shadow_models' + '/' + config['shadow_model'] + '_' + config['shadow_dataset'] + '.pth')
 
-    if config['shadow_model'] == 'resnet34':
-        shadow_model = models.resnet34(num_classes=10).to(device)
-        shadow_model.load_state_dict(torch.load(LOAD_PATH))
+    if config['shadow_dataset']=='cifar10':
+        if config['shadow_model'] == 'resnet34':
+            shadow_model = models.resnet34(num_classes=10).to(device)
+        if config['shadow_model'] == 'mobilenetv2':
+            shadow_model = models.mobilenet_v2(num_classes=10).to(device)
+    if config['shadow_dataset']=='tinyimagenet':
+        if config['shadow_model'] == 'resnet34':
+            shadow_model = models.resnet34(num_classes=200).to(device)
+        if config['shadow_model'] == 'mobilenetv2':
+            shadow_model = models.mobilenet_v2(num_classes=200).to(device)
+    shadow_model.load_state_dict(torch.load(LOAD_PATH))
 
     # load shadow datasets 
     DATA_PATH = Path(str(Path.cwd())+'/datasets/'+ config['shadow_dataset'] + '/' + config['target_model'] + '/shadow.p')
