@@ -35,11 +35,13 @@ This project explores the concept of membership inference attacks in machine lea
 2. Run the pipeline script:
 
    ```bash
-   python pipeline.py --mode <mode>
+   python pipeline.py --mode <mode> --task <task>
    ```
 
    Replace `<mode>` with either `eval` or `test`.
      * `eval`: Runs the entire attack pipeline (training, evaluation).
      * `test`: Uses pre-trained models to generate submission files (assuming models are already trained).
+   
+   Replace `<task>` with {task0, task1, task2, or task3}.
 
 This project provides a basic implementation of a membership inference attack. You can explore further by modifying the attack model architecture, experimenting with different datasets, or analyzing the attack success rate under various conditions.
