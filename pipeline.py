@@ -7,11 +7,11 @@ from submission import submission_pipeline
 
 import argparse
 
-parser = argparse.ArgumentParser(description='Main pipeline to run the attack')
-parser.add_argument('-m','--mode', help='Mode: to run the program in eval mode', default='eval')
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', '--mode', help='Set the program mode.', choices=['eval', 'test'], required=True)
+parser.add_argument('-t', '--task', help='Specify the task to run. Choose from task0, task1, task2, or task3.', choices=['task0', 'task1', 'task2', 'task3'], required=True)
 
 args = vars(parser.parse_args())
-
 
 mode = args['mode']
 
