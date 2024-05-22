@@ -5,16 +5,15 @@ from train_attack_models import train_attack_models
 from membership_inference import membership_inference
 from submission import submission_pipeline
 
-'''
-# get args from cmd
-# args <= shadow_dataset_name, shadow_model, attack_model, [eval/test]_dataset
+import argparse
 
-# parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description='Main pipeline to run the attack')
+parser.add_argument('-m','--mode', help='Mode: to run the program in eval mode', default='eval')
 
-# parser.add_argument('shadow_model', help='name of the shadow model architecture to use; supported models are resnet34, [add more models here...]')
+args = vars(parser.parse_args())
 
-'''
-mode = 'test'
+
+mode = args['mode']
 
 config = get_config('task2')
 config['mode'] = mode
