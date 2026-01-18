@@ -1,8 +1,5 @@
 ## Membership Inference Attack Implementation
 
-This project implements a membership inference attack on target models.
-
-### Project Overview
 
 This project explores the concept of membership inference attacks in machine learning. The code implements an attack to determine if a data point was used to train a target model.
 
