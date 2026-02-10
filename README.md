@@ -1,6 +1,8 @@
 # Membership Inference Attack (MIA) Pipeline
 
-**Status:** Project | **Language:** Python | **Framework:** PyTorch
+![Status: Project](https://img.shields.io/badge/Status-Project-blue)
+![Language: Python](https://img.shields.io/badge/Language-Python-yellow)
+![Framework: PyTorch](https://img.shields.io/badge/Framework-PyTorch-red)
 
 ## Overview
 
