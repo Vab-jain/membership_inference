@@ -10,6 +10,8 @@ This repository implements a **Membership Inference Attack (MIA)** to analyze pr
 
 This implementation uses the **Shadow Model technique**. It simulates the behavior of the target model to create a labeled dataset, which is then used to train a binary classifier (the attack model) to distinguish between members (training data) and non-members (test data).
 
+This project was developed for the **Attacks Against Machine Learning Models (AIMLM)** course (Summer 2024) at Saarland University.
+
 ## Methodology
 
 The attack follows a three-step pipeline:
