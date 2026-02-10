@@ -1,44 +1,95 @@
-## Membership Inference Attack Implementation
+# Membership Inference Attack (MIA) Pipeline
 
+**Status:** Project | **Language:** Python | **Framework:** PyTorch
 
-This project explores the concept of membership inference attacks in machine learning. The code implements an attack to determine if a data point was used to train a target model.
+## Overview
 
-### Files
+This repository implements a **Membership Inference Attack (MIA)** to analyze privacy leakage in machine learning models. The goal is to determine whether a specific data point was used to train a target model.
 
-* **Instructions.md:** Defines the project task, submission guidelines, and instructions on downloading shadow datasets.
-* **config.py:** Configuration file containing dataset names and other relevant parameters.
-* **pipeline.py:** The main script to run the attack pipeline. Takes a command-line argument (`eval` or `test`) to control execution mode.
-    * `eval`: Runs the entire pipeline, including training shadow and attack models, evaluating performance.
-    * `test`: Uses pre-trained models to generate submission files.
-* **create_attack_dataset.py:** Creates the attack dataset used to evaluate the attack model.
-* **train_shadow_models.py:** Trains the shadow models used in the attack.
-* **train_attack_models.py:** Trains the attack models based on predictions from shadow models.
-* **membership_inference.py:** Implements the core logic of the membership inference attack.
-* **attack_models.py:** Contains code for different attack model architectures.
-* **saved_shadow_models/ (directory):** Stores trained shadow models (potentially empty if not run in `eval` mode).
-* **saved_attack_models/ (directory):** Stores trained attack models (potentially empty if not run in `eval` mode).
-* **attack_dataset/ (directory):** Stores the generated attack dataset (potentially empty if not run in `eval` mode).
-* **submission.py:** Generates submission files in the required format.
+This implementation uses the **Shadow Model technique**. It simulates the behavior of the target model to create a labeled dataset, which is then used to train a binary classifier (the attack model) to distinguish between members (training data) and non-members (test data).
 
+## Methodology
 
-**Important Note:**
+The attack follows a three-step pipeline:
 
-* A directory named "datasets" needs to be created to store the shadow datasets before running the code. Download the datasets [here](https://drive.google.com/drive/folders/1LZhRnyw9aJ2NzKpIRqJdZACAQpN5ulTY). More details on datasets can be found in [`Instructions.md`](https://github.com/Vab-jain/membership_inference/blob/main/Instructions.md)
-`
+1. **Shadow Modeling:** Train multiple "shadow models" that mimic the target model's architecture and data distribution.
+2. **Dataset Construction:** Specific confidence vectors (prediction outputs) from the shadow models are aggregated to create a labeled attack dataset.
+3. **Inference:** A binary classifier is trained on this dataset to recognize the confidence patterns of "members" vs "non-members."
 
-### Running the Project
+![Membership Inference Attack (MIA) Pipeline](docs/MIA_pipeline.png)
 
-1. Create the "datasets" directory and download the shadow datasets as instructed in `Instructions.md`.
-2. Run the pipeline script:
+## Project Structure
 
-   ```bash
-   python pipeline.py --mode <mode> --task <task>
-   ```
+The project is organized into the following modules:
 
-   Replace `<mode>` with either `eval` or `test`.
-     * `eval`: Runs the entire attack pipeline (training, evaluation).
-     * `test`: Uses pre-trained models to generate submission files (assuming models are already trained).
-   
-   Replace `<task>` with {task0, task1, task2, or task3}.
+```text
+membership_inference/
+├── config.py                          # Hyperparameters & task definitions
+├── pipeline.py                        # Main execution script
+├── src/
+│   ├── models/
+│   │   └── architectures.py           # Attack model definitions (BasicNN, etc.)
+│   ├── attacks/
+│   │   └── mia_logic.py               # Core attack logic & metrics
+│   ├── training/
+│   │   ├── train_shadow_models.py     # Script: Train shadow models
+│   │   ├── train_attack_models.py     # Script: Train attack classifier
+│   │   └── create_attack_dataset.py   # Script: Generate attack data
+│   └── utils/
+│       └── submission.py              # Helper for submission files
+├── saved_shadow_models/               # Shadow model checkpoints
+├── saved_attack_models/               # Attack model checkpoints
+├── attack_dataset/                    # Generated attack datasets
+└── datasets/                          # Raw shadow data (download required)
 
-This project provides a basic implementation of a membership inference attack. You can explore further by modifying the attack model architecture, experimenting with different datasets, or analyzing the attack success rate under various conditions.
+```
+
+### Tasks
+
+The code supports four specific configurations:
+
+| Task ID | Target Model | Dataset | Classes |
+| --- | --- | --- | --- |
+| **task0** | ResNet34 | CIFAR-10 | 10 |
+| **task1** | MobileNetV2 | CIFAR-10 | 10 |
+| **task2** | ResNet34 | Tiny ImageNet | 200 |
+| **task3** | MobileNetV2 | Tiny ImageNet | 200 |
+
+## Setup & Usage
+
+### 1. Prerequisites
+
+Install the required dependencies:
+
+```bash
+pip install torch torchvision numpy
+
+```
+
+### 2. Prepare Data
+
+Create a `datasets` directory in the root folder. Download the required shadow datasets as detailed in `Instructions.md`.
+
+### 3. Running the Code
+
+The `pipeline.py` script handles the training and evaluation logic.
+
+**Train and Evaluate (Eval Mode)**
+To train shadow models, generate attack data, and evaluate the attack success rate:
+
+```bash
+python pipeline.py --mode eval --task task0
+
+```
+
+**Generate Submission (Test Mode)**
+To run inference using pre-trained models:
+
+```bash
+python pipeline.py --mode test --task task0
+
+```
+
+## References
+
+* Based on concepts from: Shokri et al., "Membership Inference Attacks Against Machine Learning Models" (S&P 2017).
