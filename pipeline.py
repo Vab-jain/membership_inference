@@ -1,9 +1,9 @@
 from config import get_config
-from train_shadow_models import train_shadow_models
-from create_attack_dataset import create_attack_dataset
-from train_attack_models import train_attack_models
-from membership_inference import membership_inference
-from submission import submission_pipeline
+from src.training.train_shadow_models import train_shadow_models
+from src.training.create_attack_dataset import create_attack_dataset
+from src.training.train_attack_models import train_attack_models
+from src.attacks.mia_logic import membership_inference
+from src.utils.submission import submission_pipeline
 
 import argparse
 

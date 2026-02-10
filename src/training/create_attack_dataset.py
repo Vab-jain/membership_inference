@@ -4,6 +4,9 @@ from pathlib import Path
 import pickle
 import numpy as np
 from config import device
+import sys
+from pathlib import Path as PathlibPath
+sys.path.insert(0, str(PathlibPath(__file__).parent.parent.parent))
 
 
 def create_attack_dataset(config):

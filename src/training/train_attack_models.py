@@ -3,16 +3,19 @@ from torch import nn
 from pathlib import Path
 import pickle
 from config import device
+import sys
+from pathlib import Path as PathlibPath
+sys.path.insert(0, str(PathlibPath(__file__).parent.parent.parent))
 
 
 
 def train_attack_models(config):
     # load attack model
     if config['attack_model'] == 'BasicNN':
-        from attack_models import BasicNN
+        from src.models.architectures import BasicNN
         attack_model = BasicNN(in_features=3).to(device)
     if config['attack_model'] == 'BasicNN_v2':
-        from attack_models import BasicNN_v2
+        from src.models.architectures import BasicNN_v2
         attack_model = BasicNN_v2(in_features=3).to(device)
 
     # load attak dataset

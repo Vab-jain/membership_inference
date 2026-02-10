@@ -6,6 +6,9 @@ import pickle
 from torchvision import models
 import typing
 from config import device
+import sys
+from pathlib import Path as PathlibPath
+sys.path.insert(0, str(PathlibPath(__file__).parent.parent.parent))
 
 
 def train_shadow_models(config):
